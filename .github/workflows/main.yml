@@ -471,3 +471,16 @@ jobs:
       shell: bash
       run: |
         cmake --build "build/ci" --config RelWithDebInfo --target StreamFX
+    - name: "Artifacts"
+      uses: actions/upload-artifact@v1
+      with:
+        name: "${{ matrix.runner }}-${{ matrix.generator }}-qt${{ matrix.qt }}"
+        path: "${{ github.workspace }}/build/package"
+    - name: "Validate clang-format"
+      shell: bash
+      run: |
+        cmake --build "${{ github.workspace }}/build/ci" --config Debug --target clang-format
+        cmake --build "${{ github.workspace }}/build/ci" --config RelWithDebInfo --target clang-format
+        git --no-pager diff --patch --minimal HEAD --
+        git update-index --refresh
+        git diff-index --quiet HEAD --
